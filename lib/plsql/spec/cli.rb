@@ -46,6 +46,10 @@ EOS
           :type => :boolean,
           :default => true,
           :banner => "hide the output when some exception occur"
+      method_option :cucumber,
+          :type => :boolean,
+          :default => false,
+          :banner => "execute the tests with cucumber"    
       method_option :"html",
           :type => :string,
           :banner => "generate HTML RSpec output to specified file (default is test-results.html)"
@@ -69,13 +73,15 @@ EOS
         ENV['PLSQL_COVERAGE_IGNORE_SCHEMAS'] = options[:"ignore-schemas"].join(',') if options[:"ignore-schemas"]
         ENV['PLSQL_COVERAGE_LIKE'] = options[:like].join(',') if options[:like]
 
+        testing_tool = options[:cucumber] ? 'cucumber' : 'rspec'
+
         if options[:html]
           # if there is no filename given, the options[:html] == "html"
           spec_output_filename = options[:html] == 'html' ? 'test-results.html' : options[:html]
 
-          speccommand = "rspec --format html --out #{spec_output_filename}"
+          speccommand = "#{testing_tool} --format html --out #{spec_output_filename}"
         else
-          speccommand = "rspec"
+          speccommand = "#{testing_tool}"
         end
 
         if files.empty?
